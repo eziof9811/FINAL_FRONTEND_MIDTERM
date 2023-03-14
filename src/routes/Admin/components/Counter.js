@@ -11,7 +11,8 @@ class AdminLandingPage extends React.Component {
       proBrand: '',
       proStock: '',
       proPrice: '',
-      isAddProductModal: false
+      isAddProductModal: false,
+      masterProducts: []
     }
   }
 
@@ -19,6 +20,20 @@ class AdminLandingPage extends React.Component {
     if (localStorage.getItem("role") !== 'Admin') {
       window.location.href = 'login'
     }
+    this.setState({
+      isLoading: true
+    }, () => {
+      axios.get(`http://localhost:3007/products`).then((response) => {
+        this.setState({
+          masterProducts: response.data
+        })
+      }).finally(() => {
+        this.setState({
+          isLoading: false
+        })
+      })
+    })
+
   }
 
   actionHandler = (e) => {
@@ -36,7 +51,8 @@ class AdminLandingPage extends React.Component {
   }
 
   handleAddProduct = () => {
-    const { proName, proCategory, proDescription, proBrand, proStock, proQuantity } = this.state
+    window.scrollTo({ top: 0 })
+    const { proName, proCategory, proDescription, proBrand, proStock, proPrice } = this.state
     let object = {
       "proName": proName,
       "proCategory": proCategory,
@@ -44,14 +60,17 @@ class AdminLandingPage extends React.Component {
       "proBrand": proBrand,
       "proStock": proStock,
       "proQuantity": 1,
-      "proPrice": proQuantity
+      "proPrice": proPrice,
+      "imageUrl": "https://mibbles.in/wp-content/uploads/2022/06/combo6.png"
     }
     this.setState({
       isLoading: true
     }, () => {
       axios.post(`http://localhost:3007/products/add`, object).then((res) => {
         axios.get(`http://localhost:3007/products`, object).then((response) => {
-          console.log('response', response)
+          this.setState({
+            masterProducts: response.data
+          })
         })
       }).finally(() => {
         this.setState({
@@ -69,6 +88,7 @@ class AdminLandingPage extends React.Component {
   }
 
   handleUpdateProduct = (proId) => {
+    window.scrollTo({ top: 0 })
     const { proName, proCategory, proDescription, proBrand, proStock, proQuantity } = this.state
     let object = {
       "proName": proName,
@@ -85,7 +105,9 @@ class AdminLandingPage extends React.Component {
     }, () => {
       axios.put(`http://localhost:3007/products/update/${proId}`, object).then((res) => {
         axios.get(`http://localhost:3007/products`).then((response) => {
-          console.log('response', response)
+          this.setState({
+            masterProducts: response.data
+          })
         })
       }).finally(() => {
         this.setState({
@@ -103,12 +125,15 @@ class AdminLandingPage extends React.Component {
   }
 
   handleDeleteProduct = (proId) => {
+    window.scrollTo({ top: 0 })
     this.setState({
       isLoading: true
     }, () => {
       axios.delete(`http://localhost:3007/products/delete/${proId}`).then((response) => {
         axios.get(`http://localhost:3007/products`).then((response) => {
-          console.log('response', response)
+          this.setState({
+            masterProducts: response.data
+          })
         })
       }).finally(() => {
         this.setState({
@@ -120,11 +145,13 @@ class AdminLandingPage extends React.Component {
 
 
   render () {
-    const { proName, proCategory, proDescription, proBrand, proStock, proPrice, isAddProductModal } = this.state
+    const { proName, proCategory, proDescription, proBrand, proStock, proPrice, isAddProductModal, isLoading, masterProducts } = this.state
     let btnDisabled = false
     btnDisabled = !!proName && !!proCategory && !!proDescription && !!proBrand && !!proStock && !!proPrice
+    console.log('masterProducts', masterProducts)
     return (
       <div style={{ margin: '0 auto' }} >
+        {isLoading && <div className="spinner"></div>}
         {!isAddProductModal && <div className="col-sm-12">
           <button className="btn btn-primary btn float-right mb-2"
             id="submitButton"
@@ -141,27 +168,33 @@ class AdminLandingPage extends React.Component {
                 <th rowspan="1" colspan="1">Category</th>
                 <th rowspan="1" colspan="1">Description</th>
                 <th rowspan="1" colspan="1">Brand</th>
-                <th rowspan="1" colspan="1">Price</th></tr>
+                <th rowspan="1" colspan="1">Stock</th>
+                <th rowspan="1" colspan="1">Price</th>
+                </tr>
             </thead>
             <tbody>
-              <tr className="odd">
-                <td className="sorting_1">Airi Satou</td>
-                <td>Accountant</td>
-                <td>Tokyo</td>
-                <td>33</td>
-                <td>2008/11/28</td>
-                <td>$162,700</td>
-                <button className={`btn btn-primary btn  ml-4 footer-text`} onClick={() => {
-                  this.handleUpdateProduct()
-                }}>
-                  Edit
-                </button>
-                <button className={`btn btn-primary  ml-4 btn footer-text`} onClick={() => {
-                  this.handleDeleteProduct()
-                }}>
-                  Delete
-                </button>
-              </tr>
+            
+                {masterProducts.map((v,i) => 
+                <tr className="odd">
+                  <td className="sorting_1" key={i}>{i+1}</td>
+                  <td>{v.proName}</td>
+                  <td>{v.proCategory}</td>
+                  <td>{v.proDescription}</td>
+                  <td>{v.proBrand}</td>
+                  <td>{v.proStock}</td>
+                  <td>{v.proPrice}</td>
+
+                  <button className={`btn btn-primary btn  ml-4 footer-text`} onClick={() => {
+                    this.handleUpdateProduct()
+                  }}>
+                    Edit
+                  </button>
+                  <button className={`btn btn-primary  ml-4 btn footer-text`} onClick={() => {
+                    this.handleDeleteProduct(v.proId)
+                  }}>
+                    Delete
+                  </button>
+                  </tr>)}
             </tbody>
           </table>
         </div>}
