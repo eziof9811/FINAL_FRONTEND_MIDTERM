@@ -74,6 +74,11 @@ class LoginLanding extends React.Component {
         userName: username,
         userPassword: password
       }
+      
+      /*post request :If the role is 'User', the code redirects the user to the home page using window.location.href.
+If the role is not 'User', the code assumes the user is an admin and sets the admin's JWT token in the local storage using localStorage.setItem().
+ Then, it redirects the user to the admin page.*/
+
       axios.post(`http://localhost:9090/authenticate`, object).then((response) => {
         console.log('response', response)
         localStorage.setItem("role", response.data.user.role[0].roleName)

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 
 export const Counter = ({ counter, increment, doubleAsync }) => (
   <div style={{ margin: '0 auto' }} >
-    <h2>blog</h2>
+    <h2>this is blog</h2>
   </div>
 )
 Counter.propTypes = {

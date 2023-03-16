@@ -274,8 +274,28 @@ class HomeView extends React.Component {
                                     </div>
                                     <div className="col-lg-4 text-left">
                                         <h4 className='footer-text'>Your Order Details</h4>
-                                        <span className='footer-text'>Product Name: <h6 className='footer-text'>{this.state.selectedItem.proName}</h6></span>
-                                        <span className='footer-text'>Total Payable Amount: <h6 className='footer-text'>{proQuantity * proPrice}</h6></span>
+                                        <table className="table table-bordered dataTable" id="dataTable" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info" >
+                                            <thead>
+                                                <tr role="row">
+                                                    <th className="sorting sorting_asc" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Name: activate to sort column descending" >Sr.</th>
+                                                    <th className="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" >Name</th>
+                                                    <th className="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" >Img</th>
+                                                    <th className="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" >Total</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr className="odd">
+                                                    <td className="sorting_1">1</td>
+                                                    <td>{this.state.selectedItem.proName}</td>
+                                                    <td>
+                                                        <img className="img-fluid1 rounded mb-1"
+                                                            style={{ 'width': '100px' }}
+                                                            src={this.state.selectedItem.imageUrl} alt="..." />
+                                                    </td>
+                                                    <td>{proQuantity * proPrice}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
                             </div>()
